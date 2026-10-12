@@ -35,7 +35,9 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_BASE_URL: /${{ github.event.repository.name }}/
-        run: npm run build
+        run: |
+          npm run build 2>&1
+          echo "Exit code: $?"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
