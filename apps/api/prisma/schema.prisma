@@ -1,0 +1,307 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ORG_ADMIN
+  AGENCY_ADMIN
+  RECRUITER
+  SENIOR_RECRUITER
+  HIRING_MANAGER
+  INTERVIEWER
+  CLIENT_ADMIN
+  CLIENT_USER
+  CANDIDATE
+}
+
+enum OrgPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum JobStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CLOSED
+  ARCHIVED
+}
+
+enum WorkMode {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum StageType {
+  SOURCED
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ApplicationStatus {
+  ACTIVE
+  REJECTED
+  WITHDRAWN
+  HIRED
+}
+
+enum AvailabilityStatus {
+  ACTIVELY_LOOKING
+  OPEN
+  NOT_LOOKING
+  EMPLOYED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+model Organization {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  domain      String?
+  logoUrl     String?
+  plan        OrgPlan   @default(FREE)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  users       User[]
+  jobs        Job[]
+  clients     Client[]
+  candidates  Candidate[]
+  tasks       Task[]
+}
+
+model User {
+  id             String    @id @default(cuid())
+  organizationId String?
+  email          String    @unique
+  passwordHash   String
+  name           String
+  role           UserRole  @default(RECRUITER)
+  avatarUrl      String?
+  title          String?
+  phone          String?
+  isActive       Boolean   @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization      Organization?       @relation(fields: [organizationId], references: [id])
+  candidateProfile  Candidate?          @relation("CandidateUser")
+  notifications     Notification[]
+  tasks             Task[]              @relation("TaskAssignee")
+  createdTasks      Task[]              @relation("TaskCreator")
+  candidateNotes    CandidateNote[]
+  applicationHistory ApplicationHistory[]
+}
+
+model Client {
+  id             String    @id @default(cuid())
+  organizationId String
+  name           String
+  slug           String
+  industry       String?
+  website        String?
+  logoUrl        String?
+  contactName    String?
+  contactEmail   String?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  jobs          Job[]
+
+  @@unique([organizationId, slug])
+}
+
+model Job {
+  id               String          @id @default(cuid())
+  organizationId   String
+  clientId         String?
+  title            String
+  slug             String
+  description      String
+  requirements     String?
+  responsibilities String?
+  status           JobStatus       @default(DRAFT)
+  workMode         WorkMode        @default(HYBRID)
+  experienceLevel  ExperienceLevel @default(MID)
+  location         String?
+  salaryMin        Int?
+  salaryMax        Int?
+  currency         String          @default("USD")
+  skills           String[]
+  department       String?
+  headcount        Int             @default(1)
+  applicationCount Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  client         Client?         @relation(fields: [clientId], references: [id])
+  pipelineStages PipelineStage[]
+  applications   Application[]
+
+  @@unique([organizationId, slug])
+}
+
+model Candidate {
+  id                 String             @id @default(cuid())
+  organizationId     String?
+  userId             String?            @unique
+  name               String
+  email              String
+  phone              String?
+  location           String?
+  currentTitle       String?
+  currentCompany     String?
+  experienceYears    Int?
+  skills             String[]
+  summary            String?
+  resumeUrl          String?
+  linkedinUrl        String?
+  portfolioUrl       String?
+  avatarUrl          String?
+  availabilityStatus AvailabilityStatus @default(OPEN)
+  expectedSalary     Int?
+  noticePeriodDays   Int?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  user         User?         @relation("CandidateUser", fields: [userId], references: [id])
+  applications Application[]
+  notes        CandidateNote[]
+
+  @@unique([organizationId, email])
+}
+
+model PipelineStage {
+  id        String    @id @default(cuid())
+  jobId     String
+  name      String
+  stageType StageType
+  order     Int
+  color     String?
+  createdAt DateTime  @default(now())
+
+  job          Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applications Application[]
+  historyFrom  ApplicationHistory[] @relation("FromStage")
+  historyTo    ApplicationHistory[] @relation("ToStage")
+}
+
+model Application {
+  id               String            @id @default(cuid())
+  jobId            String
+  candidateId      String
+  stageId          String
+  status           ApplicationStatus @default(ACTIVE)
+  aiScore          Int?
+  aiScoreBreakdown Json?
+  aiReasoning      String?
+  appliedAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  job       Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidate Candidate     @relation(fields: [candidateId], references: [id])
+  stage     PipelineStage @relation(fields: [stageId], references: [id])
+  history   ApplicationHistory[]
+
+  @@unique([jobId, candidateId])
+}
+
+model ApplicationHistory {
+  id            String   @id @default(cuid())
+  applicationId String
+  fromStageId   String
+  toStageId     String
+  movedById     String
+  createdAt     DateTime @default(now())
+
+  application Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fromStage   PipelineStage @relation("FromStage", fields: [fromStageId], references: [id])
+  toStage     PipelineStage @relation("ToStage", fields: [toStageId], references: [id])
+  movedBy     User          @relation(fields: [movedById], references: [id])
+}
+
+model CandidateNote {
+  id          String   @id @default(cuid())
+  candidateId String
+  authorId    String
+  content     String
+  createdAt   DateTime @default(now())
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  link      String?
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  organizationId String
+  title          String
+  description    String?
+  status         TaskStatus   @default(TODO)
+  priority       TaskPriority @default(MEDIUM)
+  dueDate        DateTime?
+  assigneeId     String?
+  createdById    String
+  jobId          String?
+  candidateId    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  assignee     User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
+}
