@@ -30,29 +30,12 @@ jobs:
         working-directory: apps/web
         run: npm install
 
-      - name: Show versions
-        working-directory: apps/web
-        run: |
-          node --version
-          npm --version
-          cat package.json
-          ls node_modules/.bin/vite || echo "vite not found"
-
       - name: Build web app
-        id: build
         working-directory: apps/web
-        continue-on-error: true
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_BASE_URL: /${{ github.event.repository.name }}/
-        run: npm run build 2>&1 | tee /tmp/vite-build.log; exit ${PIPESTATUS[0]}
-
-      - name: Print build log on failure
-        if: steps.build.outcome == 'failure'
-        run: |
-          echo "=== VITE BUILD LOG ==="
-          cat /tmp/vite-build.log
-          exit 1
+        run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
