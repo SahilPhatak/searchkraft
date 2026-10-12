@@ -33,7 +33,7 @@ jobs:
       - name: Build web app
         working-directory: apps/web
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || '' }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_BASE_URL: /${{ github.event.repository.name }}/
         run: npm run build
 
