@@ -30,14 +30,20 @@ jobs:
         working-directory: apps/web
         run: npm install
 
+      - name: Show versions
+        working-directory: apps/web
+        run: |
+          node --version
+          npm --version
+          cat package.json
+          ls node_modules/.bin/vite || echo "vite not found"
+
       - name: Build web app
         working-directory: apps/web
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_BASE_URL: /${{ github.event.repository.name }}/
-        run: |
-          npm run build 2>&1
-          echo "Exit code: $?"
+        run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
