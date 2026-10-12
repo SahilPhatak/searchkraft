@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 

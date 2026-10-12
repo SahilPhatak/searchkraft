@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent, type ChangeEventHandler } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Plus, Briefcase, MapPin, Users, Zap } from 'lucide-react';
@@ -17,7 +17,7 @@ function CreateJobForm({ onSuccess }: { onSuccess: () => void }) {
   const [parsing, setParsing] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', location: '', workMode: 'HYBRID', experienceLevel: 'MID', skills: '' });
 
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+  const set = (k: string) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
 
   const parseJD = async () => {
@@ -71,7 +71,7 @@ function CreateJobForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <div className="form-group col-span-2">
           <label className="label">Description *</label>
-          <textarea className="input h-24 resize-none" value={form.description} onChange={set('description') as React.ChangeEventHandler<HTMLTextAreaElement>} placeholder="Role overview…" required />
+          <textarea className="input h-24 resize-none" value={form.description} onChange={set('description') as ChangeEventHandler<HTMLTextAreaElement>} placeholder="Role overview…" required />
         </div>
         <div className="form-group col-span-2">
           <label className="label">Skills (comma-separated)</label>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Search, Users, MapPin, Zap } from 'lucide-react';
@@ -25,7 +25,7 @@ export default function TalentPage() {
     enabled: true,
   });
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!nlpQuery.trim()) return;
     setParsing(true);

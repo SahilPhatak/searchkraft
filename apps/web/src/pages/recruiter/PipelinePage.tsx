@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useState, type DragEvent } from 'react';
 import api from '../../lib/api';
 import { PageLoader } from '../../components/ui/Loading';
 import Avatar from '../../components/ui/Avatar';
@@ -64,7 +64,7 @@ export default function PipelinePage() {
     onError: () => toast.error('Failed to move candidate'),
   });
 
-  const onDrop = (stageId: string) => (e: React.DragEvent) => {
+  const onDrop = (stageId: string) => (e: DragEvent) => {
     e.preventDefault();
     if (dragging) moveMutation.mutate({ appId: dragging, stageId });
     setDragging(null);

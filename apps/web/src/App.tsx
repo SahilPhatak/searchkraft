@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/AuthContext';
 import RecruiterLayout from './components/layout/RecruiterLayout';
@@ -19,7 +20,7 @@ import SettingsPage from './pages/recruiter/SettingsPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import ClientDashboard from './pages/client/ClientDashboard';
 
-function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
+function ProtectedRoute({ children, roles }: { children: ReactNode; roles?: string[] }) {
   const { user, isLoading } = useAuth();
   if (isLoading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>;
   if (!user) return <Navigate to="/login" replace />;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent, type ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/AuthContext';
 import toast from 'react-hot-toast';
@@ -11,9 +11,9 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', organizationName: '' });
   const [loading, setLoading] = useState(false);
 
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const set = (k: string) => (e: ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); return; }
     setLoading(true);
