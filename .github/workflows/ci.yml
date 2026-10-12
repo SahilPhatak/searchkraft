@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm install --workspace=apps/web
+      - working-directory: apps/web
+        run: npm install
       - run: npm run typecheck --workspace=apps/web
 
   build:
@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm install --workspace=apps/web
+      - working-directory: apps/web
+        run: npm install
       - run: npm run build --workspace=apps/web
         env:
           VITE_API_URL: ''
