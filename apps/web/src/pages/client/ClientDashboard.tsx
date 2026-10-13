@@ -5,7 +5,7 @@ export default function ClientDashboard() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-navy-900 p-8">
+    <div className="min-h-screen bg-dark-900 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
@@ -26,7 +26,7 @@ export default function ClientDashboard() {
           {[['Open Roles', '5', Briefcase], ['Shortlisted', '18', Users], ['Offers Sent', '2', CheckCircle2]].map(([label, val, Icon]) => (
             <div key={label as string} className="stat-card">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-400 uppercase tracking-wide">{label}</span>
+                <span className="text-xs text-dark-400 uppercase tracking-wide">{label}</span>
                 <Icon size={18} className="text-brand-400" />
               </div>
               <div className="text-3xl font-bold text-white">{val}</div>
@@ -36,7 +36,7 @@ export default function ClientDashboard() {
 
         <div className="card p-5">
           <h2 className="font-semibold text-white mb-3">Recent updates from your recruiter</h2>
-          <div className="text-sm text-slate-400">Your recruitment partner will share candidate shortlists and updates here.</div>
+          <div className="text-sm text-dark-400">Your recruitment partner will share candidate shortlists and updates here.</div>
         </div>
       </div>
     </div>

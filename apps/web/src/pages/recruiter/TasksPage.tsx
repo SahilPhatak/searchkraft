@@ -47,15 +47,15 @@ export default function TasksPage() {
       <div className="space-y-2">
         {tasks.map((task: { id: string; title: string; description?: string; status: string; priority: string; dueDate?: string }) => (
           <div key={task.id} className="card p-4 flex items-start gap-3">
-            <button onClick={() => toggleMutation.mutate({ id: task.id, status: task.status === 'DONE' ? 'TODO' : 'DONE' })} className="mt-0.5 text-slate-500 hover:text-emerald-400 transition-colors">
+            <button onClick={() => toggleMutation.mutate({ id: task.id, status: task.status === 'DONE' ? 'TODO' : 'DONE' })} className="mt-0.5 text-dark-500 hover:text-emerald-400 transition-colors">
               {task.status === 'DONE' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <Circle size={18} />}
             </button>
             <div className="flex-1 min-w-0">
-              <div className={`font-medium ${task.status === 'DONE' ? 'line-through text-slate-500' : 'text-white'}`}>{task.title}</div>
-              {task.description && <div className="text-sm text-slate-400 mt-0.5">{task.description}</div>}
+              <div className={`font-medium ${task.status === 'DONE' ? 'line-through text-dark-500' : 'text-white'}`}>{task.title}</div>
+              {task.description && <div className="text-sm text-dark-400 mt-0.5">{task.description}</div>}
               <div className="flex items-center gap-2 mt-1.5">
                 <span className={`badge ${task.priority === 'HIGH' ? 'badge-red' : task.priority === 'URGENT' ? 'badge-red' : task.priority === 'MEDIUM' ? 'badge-yellow' : 'badge-gray'}`}>{task.priority}</span>
-                {task.dueDate && <span className="text-xs text-slate-500">Due {new Date(task.dueDate).toLocaleDateString()}</span>}
+                {task.dueDate && <span className="text-xs text-dark-500">Due {new Date(task.dueDate).toLocaleDateString()}</span>}
               </div>
             </div>
           </div>

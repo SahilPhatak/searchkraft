@@ -1,8 +1,8 @@
 import { getInitials } from '../../lib/utils';
 
 const COLORS = [
-  'bg-brand-600', 'bg-purple-600', 'bg-emerald-600', 'bg-amber-600',
-  'bg-red-600', 'bg-cyan-600', 'bg-pink-600', 'bg-indigo-600',
+  'bg-brand-700', 'bg-purple-700', 'bg-emerald-700', 'bg-amber-700',
+  'bg-red-700', 'bg-cyan-700', 'bg-pink-700', 'bg-violet-700',
 ];
 
 function colorForName(name: string) {

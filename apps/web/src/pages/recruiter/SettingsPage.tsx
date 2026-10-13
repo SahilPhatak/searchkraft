@@ -34,10 +34,10 @@ export default function SettingsPage() {
         <h2 className="font-semibold text-white mb-4">Integrations</h2>
         <div className="space-y-3">
           {[['Anthropic AI', 'AI matching, parsing & insights', true], ['GitHub', 'Code portfolio screening', false], ['LinkedIn', 'Candidate sourcing', false]].map(([name, desc, active]) => (
-            <div key={name as string} className="flex items-center justify-between py-2 border-b border-navy-700 last:border-0">
+            <div key={name as string} className="flex items-center justify-between py-2 border-b border-dark-700 last:border-0">
               <div>
-                <div className="font-medium text-slate-200">{name}</div>
-                <div className="text-xs text-slate-500">{desc}</div>
+                <div className="font-medium text-dark-200">{name}</div>
+                <div className="text-xs text-dark-500">{desc}</div>
               </div>
               <span className={active ? 'badge-green' : 'badge-gray'}>{active ? 'Active' : 'Connect'}</span>
             </div>

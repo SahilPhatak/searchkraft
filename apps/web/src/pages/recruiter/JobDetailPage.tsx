@@ -21,7 +21,7 @@ export default function JobDetailPage() {
   });
 
   if (isLoading) return <PageLoader />;
-  if (!job) return <div className="text-slate-400">Job not found</div>;
+  if (!job) return <div className="text-dark-400">Job not found</div>;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -49,12 +49,12 @@ export default function JobDetailPage() {
         <div className="lg:col-span-2 space-y-4">
           <div className="card p-5">
             <h2 className="font-semibold text-white mb-3">Description</h2>
-            <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{job.description}</p>
+            <p className="text-dark-300 text-sm leading-relaxed whitespace-pre-wrap">{job.description}</p>
           </div>
           {job.requirements && (
             <div className="card p-5">
               <h2 className="font-semibold text-white mb-3">Requirements</h2>
-              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{job.requirements}</p>
+              <p className="text-dark-300 text-sm leading-relaxed whitespace-pre-wrap">{job.requirements}</p>
             </div>
           )}
         </div>
@@ -71,8 +71,8 @@ export default function JobDetailPage() {
                 ['Headcount', job.headcount],
               ].map(([lbl, val, Icon]) => val && (
                 <div key={lbl as string} className="flex items-start justify-between gap-2">
-                  <span className="text-slate-500">{lbl}</span>
-                  <span className="text-slate-200 text-right">{val}</span>
+                  <span className="text-dark-500">{lbl}</span>
+                  <span className="text-dark-200 text-right">{val}</span>
                 </div>
               ))}
             </div>
@@ -89,7 +89,7 @@ export default function JobDetailPage() {
 
           <div className="card p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Users size={16} className="text-slate-400" />
+              <Users size={16} className="text-dark-400" />
               <h2 className="font-semibold text-white">{job.applicationCount} Applications</h2>
             </div>
             <Link to={`/jobs/${id}/pipeline`} className="btn-secondary w-full justify-center text-sm">View pipeline →</Link>

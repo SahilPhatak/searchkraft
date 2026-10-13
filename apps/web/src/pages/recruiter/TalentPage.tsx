@@ -47,7 +47,7 @@ export default function TalentPage() {
       {/* NLP Search */}
       <form onSubmit={handleSearch} className="flex gap-2">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-3 text-slate-500" />
+          <Search size={16} className="absolute left-3 top-3 text-dark-500" />
           <input
             className="input pl-9"
             value={nlpQuery}
@@ -63,7 +63,7 @@ export default function TalentPage() {
       {/* Parsed filters hint */}
       {Object.keys(parsedFilters).length > 0 && (
         <div className="flex flex-wrap gap-2">
-          <span className="text-xs text-slate-500">AI parsed:</span>
+          <span className="text-xs text-dark-500">AI parsed:</span>
           {Object.entries(parsedFilters).map(([k, v]) => v && (
             <span key={k} className="badge-blue">{k}: {String(v)}</span>
           ))}
@@ -85,10 +85,10 @@ export default function TalentPage() {
                   <span className="font-semibold text-white">{c.name}</span>
                   <span className={getStatusBadge(c.availabilityStatus)}>{c.availabilityStatus.replace(/_/g, ' ')}</span>
                 </div>
-                <div className="text-sm text-slate-400">
+                <div className="text-sm text-dark-400">
                   {c.currentTitle}{c.currentCompany && ` @ ${c.currentCompany}`}
                 </div>
-                <div className="flex items-center gap-4 mt-1 text-xs text-slate-500">
+                <div className="flex items-center gap-4 mt-1 text-xs text-dark-500">
                   {c.location && <span className="flex items-center gap-1"><MapPin size={12} />{c.location}</span>}
                   {c.experienceYears && <span>{formatExperience(c.experienceYears)}</span>}
                 </div>

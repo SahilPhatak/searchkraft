@@ -2,7 +2,24 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/AuthContext';
 import toast from 'react-hot-toast';
-import { Zap, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+
+function LogoMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lmlogin" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#C084FC"/>
+          <stop offset="100%" stopColor="#7C3AED"/>
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="8" fill="url(#lmlogin)"/>
+      <polygon points="4,16 26,6 20,16 26,26" fill="white" opacity="0.25"/>
+      <polygon points="4,16 26,6 15,18" fill="white"/>
+      <polygon points="15,18 20,16 17,24" fill="white" opacity="0.75"/>
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -32,47 +49,51 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-900 via-brand-800 to-navy-900 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #2d1060 50%, #0f0f0f 100%)' }}>
         <div className="max-w-md">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <Zap size={20} className="text-white" />
+            <LogoMark size={40} />
+            <div className="flex flex-col leading-none">
+              <span className="font-bold text-white tracking-tight" style={{ fontSize: 22 }}>
+                Search<span style={{ background: 'linear-gradient(135deg, #C084FC 0%, #7C3AED 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Kraft</span>
+              </span>
+              <span className="text-xs tracking-widest uppercase font-medium" style={{ color: '#C084FC' }}>Recruit OS</span>
             </div>
-            <span className="text-white font-bold text-2xl">SearchKraft</span>
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Your AI-native recruitment OS</h1>
-          <p className="text-brand-200 text-lg">Find, match, and hire the best candidates 10x faster with intelligent automation.</p>
+          <p className="text-lg" style={{ color: '#D8B4FE' }}>Find, match, and hire the best candidates 10x faster with intelligent automation.</p>
           <div className="mt-10 grid grid-cols-3 gap-4">
             {[['10x', 'Faster hiring'], ['95%', 'Match accuracy'], ['40%', 'Cost reduction']].map(([val, lbl]) => (
-              <div key={lbl} className="bg-white/10 rounded-xl p-4">
+              <div key={lbl} className="rounded-xl p-4" style={{ background: 'rgba(192,132,252,0.1)', border: '1px solid rgba(124,58,237,0.3)' }}>
                 <div className="text-2xl font-bold text-white">{val}</div>
-                <div className="text-xs text-brand-200 mt-1">{lbl}</div>
+                <div className="text-xs mt-1" style={{ color: '#C084FC' }}>{lbl}</div>
               </div>
             ))}
           </div>
+          <p className="mt-10 text-sm font-medium tracking-widest uppercase" style={{ color: 'rgba(192,132,252,0.6)' }}>Crafting Right Connections</p>
         </div>
       </div>
 
       {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-navy-900">
+      <div className="flex-1 flex items-center justify-center p-8 bg-dark-900">
         <div className="w-full max-w-sm">
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <Zap size={24} className="text-brand-500" />
-            <span className="text-white font-bold text-xl">SearchKraft</span>
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
+            <LogoMark size={32} />
+            <span className="text-white font-bold text-xl">Search<span style={{ background: 'linear-gradient(135deg, #C084FC 0%, #7C3AED 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Kraft</span></span>
           </div>
           <h2 className="text-2xl font-bold text-white mb-1">Sign in</h2>
-          <p className="text-slate-400 mb-8">Welcome back — pick up where you left off.</p>
+          <p className="text-dark-400 mb-8">Welcome back — pick up where you left off.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-group">
-              <label className="label">Email</label>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-dark-200 mb-1.5">Email</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="input" placeholder="you@company.com" />
             </div>
-            <div className="form-group">
-              <label className="label">Password</label>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-dark-200 mb-1.5">Password</label>
               <div className="relative">
                 <input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required className="input pr-10" placeholder="••••••••" />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-2.5 text-dark-400 hover:text-dark-200">
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -82,12 +103,12 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <button onClick={fillDemo} className="mt-3 w-full text-center text-sm text-brand-400 hover:text-brand-300">
+          <button onClick={fillDemo} className="mt-3 w-full text-center text-sm hover:text-brand-300 transition-colors" style={{ color: '#C084FC' }}>
             Use demo credentials
           </button>
 
-          <p className="mt-6 text-center text-sm text-slate-400">
-            No account? <Link to="/register" className="text-brand-400 hover:text-brand-300">Create one →</Link>
+          <p className="mt-6 text-center text-sm text-dark-400">
+            No account? <Link to="/register" className="hover:text-brand-300 transition-colors" style={{ color: '#C084FC' }}>Create one →</Link>
           </p>
         </div>
       </div>

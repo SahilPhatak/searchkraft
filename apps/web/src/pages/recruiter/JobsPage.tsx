@@ -110,10 +110,10 @@ export default function JobsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-navy-800 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-dark-800 p-1 rounded-xl w-fit">
         {TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${tab === t ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white'}`}>
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${tab === t ? 'bg-brand-600 text-white' : 'text-dark-400 hover:text-white'}`}>
             {t}
           </button>
         ))}
@@ -133,15 +133,15 @@ export default function JobsPage() {
                   <h3 className="font-semibold text-white truncate">{job.title}</h3>
                   <span className={getStatusBadge(job.status)}>{job.status}</span>
                 </div>
-                {job.client && <div className="text-xs text-slate-500 mb-2">{job.client.name}</div>}
-                <div className="flex items-center gap-4 text-sm text-slate-400">
+                {job.client && <div className="text-xs text-dark-500 mb-2">{job.client.name}</div>}
+                <div className="flex items-center gap-4 text-sm text-dark-400">
                   {job.location && <span className="flex items-center gap-1"><MapPin size={13} />{job.location}</span>}
                   <span className="flex items-center gap-1"><Users size={13} />{job.applicationCount} applicants</span>
                   <span className="badge-blue">{job.workMode}</span>
                 </div>
               </div>
               <div className="text-right flex-shrink-0">
-                <div className="text-sm font-medium text-slate-300">{formatSalary(job.salaryMin, job.salaryMax, job.currency)}</div>
+                <div className="text-sm font-medium text-dark-300">{formatSalary(job.salaryMin, job.salaryMax, job.currency)}</div>
               </div>
             </div>
             {job.skills.length > 0 && (
