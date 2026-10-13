@@ -30,25 +30,25 @@ export default function AnalyticsPage() {
         ].map(([label, value]) => (
           <div key={label as string} className="stat-card text-center">
             <div className="text-3xl font-bold text-brand-400">{value}</div>
-            <div className="text-sm text-dark-400 mt-1">{label}</div>
+            <div className="text-sm text-gray-400 mt-1">{label}</div>
           </div>
         ))}
       </div>
 
       <div className="card p-5">
-        <h2 className="font-semibold text-white mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-brand-400" />Pipeline Overview</h2>
-        <div className="text-dark-400 text-sm">
+        <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-brand-400" />Pipeline Overview</h2>
+        <div className="text-gray-400 text-sm">
           Connect a job to view detailed funnel analytics.
         </div>
       </div>
 
       <div className="card p-5">
-        <h2 className="font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-emerald-400" />Key Metrics</h2>
+        <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-emerald-400" />Key Metrics</h2>
         <div className="grid grid-cols-3 gap-4">
           {[['Time to hire', '18 days'], ['Offer acceptance', '87%'], ['Source quality', 'LinkedIn 42%']].map(([k, v]) => (
-            <div key={k} className="bg-dark-700 rounded-xl p-4">
-              <div className="text-sm text-dark-400 mb-1">{k}</div>
-              <div className="text-lg font-bold text-white">{v}</div>
+            <div key={k} className="bg-gray-100 rounded-xl p-4">
+              <div className="text-sm text-gray-400 mb-1">{k}</div>
+              <div className="text-lg font-bold text-gray-900">{v}</div>
             </div>
           ))}
         </div>

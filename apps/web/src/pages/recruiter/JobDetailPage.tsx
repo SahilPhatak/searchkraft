@@ -21,7 +21,7 @@ export default function JobDetailPage() {
   });
 
   if (isLoading) return <PageLoader />;
-  if (!job) return <div className="text-dark-400">Job not found</div>;
+  if (!job) return <div className="text-gray-400">Job not found</div>;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -48,20 +48,20 @@ export default function JobDetailPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <div className="card p-5">
-            <h2 className="font-semibold text-white mb-3">Description</h2>
-            <p className="text-dark-300 text-sm leading-relaxed whitespace-pre-wrap">{job.description}</p>
+            <h2 className="font-semibold text-gray-900 mb-3">Description</h2>
+            <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-wrap">{job.description}</p>
           </div>
           {job.requirements && (
             <div className="card p-5">
-              <h2 className="font-semibold text-white mb-3">Requirements</h2>
-              <p className="text-dark-300 text-sm leading-relaxed whitespace-pre-wrap">{job.requirements}</p>
+              <h2 className="font-semibold text-gray-900 mb-3">Requirements</h2>
+              <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-wrap">{job.requirements}</p>
             </div>
           )}
         </div>
 
         <div className="space-y-4">
           <div className="card p-5 space-y-3">
-            <h2 className="font-semibold text-white mb-1">Details</h2>
+            <h2 className="font-semibold text-gray-900 mb-1">Details</h2>
             <div className="text-sm space-y-2">
               {[
                 ['Location', job.location, MapPin],
@@ -71,8 +71,8 @@ export default function JobDetailPage() {
                 ['Headcount', job.headcount],
               ].map(([lbl, val, Icon]) => val && (
                 <div key={lbl as string} className="flex items-start justify-between gap-2">
-                  <span className="text-dark-500">{lbl}</span>
-                  <span className="text-dark-200 text-right">{val}</span>
+                  <span className="text-gray-400">{lbl}</span>
+                  <span className="text-gray-600 text-right">{val}</span>
                 </div>
               ))}
             </div>
@@ -80,7 +80,7 @@ export default function JobDetailPage() {
 
           {job.skills?.length > 0 && (
             <div className="card p-5">
-              <h2 className="font-semibold text-white mb-3">Skills</h2>
+              <h2 className="font-semibold text-gray-900 mb-3">Skills</h2>
               <div className="flex flex-wrap gap-1.5">
                 {job.skills.map((s: string) => <span key={s} className="badge-blue">{s}</span>)}
               </div>
@@ -89,8 +89,8 @@ export default function JobDetailPage() {
 
           <div className="card p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Users size={16} className="text-dark-400" />
-              <h2 className="font-semibold text-white">{job.applicationCount} Applications</h2>
+              <Users size={16} className="text-gray-400" />
+              <h2 className="font-semibold text-gray-900">{job.applicationCount} Applications</h2>
             </div>
             <Link to={`/jobs/${id}/pipeline`} className="btn-secondary w-full justify-center text-sm">View pipeline →</Link>
           </div>

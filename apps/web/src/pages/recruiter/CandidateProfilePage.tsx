@@ -27,7 +27,7 @@ export default function CandidateProfilePage() {
   });
 
   if (isLoading) return <PageLoader />;
-  if (!candidate) return <div className="text-dark-400">Candidate not found</div>;
+  if (!candidate) return <div className="text-gray-400">Candidate not found</div>;
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -41,13 +41,13 @@ export default function CandidateProfilePage() {
           <Avatar name={candidate.name} src={candidate.avatarUrl} size="lg" />
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-xl font-bold text-white">{candidate.name}</h1>
+              <h1 className="text-xl font-bold text-gray-900">{candidate.name}</h1>
               <span className={getStatusBadge(candidate.availabilityStatus)}>{candidate.availabilityStatus.replace(/_/g, ' ')}</span>
             </div>
-            <div className="text-dark-300 mb-2">
+            <div className="text-gray-500 mb-2">
               {candidate.currentTitle}{candidate.currentCompany && ` @ ${candidate.currentCompany}`}
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-dark-400">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
               {candidate.location && <span className="flex items-center gap-1"><MapPin size={13} />{candidate.location}</span>}
               {candidate.experienceYears && <span>{formatExperience(candidate.experienceYears)} exp</span>}
               {candidate.linkedinUrl && <a href={candidate.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-brand-400"><Linkedin size={13} />LinkedIn</a>}
@@ -58,10 +58,10 @@ export default function CandidateProfilePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-dark-800 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-white p-1 rounded-xl w-fit">
         {TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${tab === t ? 'bg-brand-600 text-white' : 'text-dark-400 hover:text-white'}`}>
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${tab === t ? 'bg-brand-600 text-gray-900' : 'text-gray-400 hover:text-gray-900'}`}>
             {t}
           </button>
         ))}
@@ -69,14 +69,14 @@ export default function CandidateProfilePage() {
 
       {tab === 'Overview' && (
         <div className="card p-5">
-          <h3 className="font-semibold text-white mb-3">Summary</h3>
-          <p className="text-dark-300 text-sm leading-relaxed">{candidate.summary || 'No summary available.'}</p>
+          <h3 className="font-semibold text-gray-900 mb-3">Summary</h3>
+          <p className="text-gray-500 text-sm leading-relaxed">{candidate.summary || 'No summary available.'}</p>
         </div>
       )}
 
       {tab === 'Skills' && (
         <div className="card p-5">
-          <h3 className="font-semibold text-white mb-3">Skills</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">Skills</h3>
           <div className="flex flex-wrap gap-2">
             {candidate.skills.map((s: string) => <span key={s} className="badge-blue px-3 py-1 text-sm">{s}</span>)}
           </div>
@@ -85,12 +85,12 @@ export default function CandidateProfilePage() {
 
       {tab === 'Pipeline' && (
         <div className="space-y-3">
-          {candidate.applications?.length === 0 && <div className="text-dark-400 text-sm">Not in any pipeline yet.</div>}
+          {candidate.applications?.length === 0 && <div className="text-gray-400 text-sm">Not in any pipeline yet.</div>}
           {candidate.applications?.map((app: { id: string; job: { title: string; status: string }; stage: { name: string } }) => (
             <div key={app.id} className="card p-4 flex items-center gap-3">
               <div className="flex-1">
-                <div className="font-medium text-white">{app.job.title}</div>
-                <div className="text-sm text-dark-400">{app.stage.name}</div>
+                <div className="font-medium text-gray-900">{app.job.title}</div>
+                <div className="text-sm text-gray-400">{app.stage.name}</div>
               </div>
               <span className={getStatusBadge(app.job.status)}>{app.job.status}</span>
             </div>
@@ -114,8 +114,8 @@ export default function CandidateProfilePage() {
           </div>
           {candidate.notes?.map((note: { id: string; content: string; createdAt: string }) => (
             <div key={note.id} className="card p-4">
-              <p className="text-dark-200 text-sm leading-relaxed">{note.content}</p>
-              <div className="text-xs text-dark-500 mt-2">{timeAgo(note.createdAt)}</div>
+              <p className="text-gray-600 text-sm leading-relaxed">{note.content}</p>
+              <div className="text-xs text-gray-400 mt-2">{timeAgo(note.createdAt)}</div>
             </div>
           ))}
         </div>

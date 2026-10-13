@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Royal purple brand — matches the logo
+        // Royal purple brand palette
         brand: {
           50:  '#FAF5FF',
           100: '#F3E8FF',
@@ -16,19 +16,20 @@ module.exports = {
           700: '#7C3AED',
           800: '#6D28D9',
           900: '#5B21B6',
+          950: '#3B0764',
         },
-        // Dark background palette — deep charcoal/near-black (not navy blue)
-        dark: {
-          50:  '#F8F8F8',
-          100: '#EBEBEB',
-          200: '#D4D4D4',
-          300: '#A8A8A8',
-          400: '#737373',
-          500: '#525252',
-          600: '#3D3D3D',
-          700: '#2A2A2A',
-          800: '#1A1A1A',
-          900: '#0F0F0F',
+        // Neutral grays for text/borders/surfaces
+        gray: {
+          50:  '#F9FAFB',
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
+          900: '#111827',
         },
       },
       backgroundImage: {
@@ -42,6 +43,10 @@ module.exports = {
       keyframes: {
         fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
         slideUp: { from: { transform: 'translateY(8px)', opacity: '0' }, to: { transform: 'translateY(0)', opacity: '1' } },
+      },
+      boxShadow: {
+        'brand': '0 4px 20px rgba(124, 58, 237, 0.25)',
+        'brand-lg': '0 8px 30px rgba(124, 58, 237, 0.35)',
       },
     },
   },

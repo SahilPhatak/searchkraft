@@ -13,7 +13,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="card p-6 space-y-4">
-        <h2 className="font-semibold text-white">Profile</h2>
+        <h2 className="font-semibold text-gray-900">Profile</h2>
         <div className="grid gap-4">
           <div className="form-group">
             <label className="label">Name</label>
@@ -31,13 +31,13 @@ export default function SettingsPage() {
       </div>
 
       <div className="card p-6">
-        <h2 className="font-semibold text-white mb-4">Integrations</h2>
+        <h2 className="font-semibold text-gray-900 mb-4">Integrations</h2>
         <div className="space-y-3">
           {[['Anthropic AI', 'AI matching, parsing & insights', true], ['GitHub', 'Code portfolio screening', false], ['LinkedIn', 'Candidate sourcing', false]].map(([name, desc, active]) => (
-            <div key={name as string} className="flex items-center justify-between py-2 border-b border-dark-700 last:border-0">
+            <div key={name as string} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
               <div>
-                <div className="font-medium text-dark-200">{name}</div>
-                <div className="text-xs text-dark-500">{desc}</div>
+                <div className="font-medium text-gray-600">{name}</div>
+                <div className="text-xs text-gray-400">{desc}</div>
               </div>
               <span className={active ? 'badge-green' : 'badge-gray'}>{active ? 'Active' : 'Connect'}</span>
             </div>

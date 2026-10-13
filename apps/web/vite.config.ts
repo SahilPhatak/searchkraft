@@ -13,7 +13,7 @@ export default defineConfig({
         short_name: 'SearchKraft',
         description: 'AI-native recruitment operating system',
         theme_color: '#7C3AED',
-        background_color: '#0F0F0F',
+        background_color: '#FFFFFF',
         display: 'standalone',
         orientation: 'portrait',
         scope: './',

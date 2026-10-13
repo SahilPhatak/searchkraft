@@ -5,12 +5,12 @@ export default function ClientDashboard() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-dark-900 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
             <Zap size={22} className="text-brand-500" />
-            <span className="font-bold text-xl text-white">SearchKraft</span>
+            <span className="font-bold text-xl text-gray-900">SearchKraft</span>
           </div>
           <button onClick={logout} className="btn-ghost text-sm">Sign out</button>
         </div>
@@ -26,17 +26,17 @@ export default function ClientDashboard() {
           {[['Open Roles', '5', Briefcase], ['Shortlisted', '18', Users], ['Offers Sent', '2', CheckCircle2]].map(([label, val, Icon]) => (
             <div key={label as string} className="stat-card">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-dark-400 uppercase tracking-wide">{label}</span>
+                <span className="text-xs text-gray-400 uppercase tracking-wide">{label}</span>
                 <Icon size={18} className="text-brand-400" />
               </div>
-              <div className="text-3xl font-bold text-white">{val}</div>
+              <div className="text-3xl font-bold text-gray-900">{val}</div>
             </div>
           ))}
         </div>
 
         <div className="card p-5">
-          <h2 className="font-semibold text-white mb-3">Recent updates from your recruiter</h2>
-          <div className="text-sm text-dark-400">Your recruitment partner will share candidate shortlists and updates here.</div>
+          <h2 className="font-semibold text-gray-900 mb-3">Recent updates from your recruiter</h2>
+          <div className="text-sm text-gray-400">Your recruitment partner will share candidate shortlists and updates here.</div>
         </div>
       </div>
     </div>

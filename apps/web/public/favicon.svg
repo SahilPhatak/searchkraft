@@ -1,13 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#A855F7"/>
+    <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C084FC"/>
       <stop offset="100%" stop-color="#7C3AED"/>
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
-  <!-- Paper plane -->
-  <polygon points="4,16 26,6 20,16 26,26" fill="white" opacity="0.3"/>
-  <polygon points="4,16 26,6 15,18" fill="white"/>
-  <polygon points="15,18 20,16 17,24" fill="white" opacity="0.8"/>
+  <!-- White background with rounded corners -->
+  <rect width="32" height="32" rx="8" fill="white"/>
+  <!-- Purple paper plane on white -->
+  <polygon points="4,16 26,6 20,16 26,26" fill="url(#pg)" opacity="0.3"/>
+  <polygon points="4,16 26,6 15,18" fill="url(#pg)"/>
+  <polygon points="15,18 20,16 17,24" fill="#7C3AED"/>
 </svg>

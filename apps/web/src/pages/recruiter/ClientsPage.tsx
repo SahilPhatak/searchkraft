@@ -43,17 +43,17 @@ export default function ClientsPage() {
         {clients.map((c: { id: string; name: string; industry?: string; website?: string; contactName?: string; _count?: { jobs: number } }) => (
           <div key={c.id} className="card-hover p-5">
             <div className="flex items-start gap-3 mb-3">
-              <div className="w-10 h-10 bg-dark-700 rounded-xl flex items-center justify-center text-lg font-bold text-dark-300">
+              <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-lg font-bold text-gray-500">
                 {c.name[0]}
               </div>
               <div>
-                <div className="font-semibold text-white">{c.name}</div>
-                {c.industry && <div className="text-xs text-dark-400">{c.industry}</div>}
+                <div className="font-semibold text-gray-900">{c.name}</div>
+                {c.industry && <div className="text-xs text-gray-400">{c.industry}</div>}
               </div>
             </div>
             <div className="flex items-center justify-between text-sm">
               {c.website && <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-brand-400 hover:text-brand-300"><Globe size={13} />Website</a>}
-              <span className="text-dark-500 ml-auto">{c._count?.jobs || 0} jobs</span>
+              <span className="text-gray-400 ml-auto">{c._count?.jobs || 0} jobs</span>
             </div>
           </div>
         ))}

@@ -53,28 +53,30 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 flex items-center justify-center p-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
         <div className="flex items-center gap-3 mb-8">
           <LogoMark size={36} />
           <div className="flex flex-col leading-none">
-            <span className="font-bold text-white tracking-tight" style={{ fontSize: 20 }}>
-              Search<span style={{ background: 'linear-gradient(135deg, #C084FC 0%, #7C3AED 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Kraft</span>
+            <span className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 20 }}>
+              Search<span className="gradient-text">Kraft</span>
             </span>
-            <span className="text-dark-400 text-xs tracking-widest uppercase font-medium">Recruit OS</span>
+            <span className="text-gray-400 text-xs tracking-widest uppercase font-medium">Recruit OS</span>
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-1">Create account</h2>
-        <p className="text-dark-400 mb-6">Get started for free.</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Create account</h2>
+        <p className="text-gray-500 mb-6">Get started for free.</p>
 
         {/* Role toggle */}
-        <div className="flex gap-2 mb-6 p-1 bg-dark-800 rounded-xl">
+        <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
           {(['RECRUITER', 'CANDIDATE'] as const).map(r => (
             <button
               key={r}
               type="button"
               onClick={() => setRole(r)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${role === r ? 'text-white' : 'text-dark-400 hover:text-white'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
+                role === r ? 'text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
               style={role === r ? { background: 'linear-gradient(135deg, #C084FC 0%, #7C3AED 100%)' } : {}}
             >
               {r === 'RECRUITER' ? <Building2 size={15} /> : <User size={15} />}
@@ -84,31 +86,31 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-dark-200 mb-1.5">Full name</label>
+          <div>
+            <label className="label">Full name</label>
             <input className="input" value={form.name} onChange={set('name')} required placeholder="Jane Smith" />
           </div>
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-dark-200 mb-1.5">Work email</label>
+          <div>
+            <label className="label">Work email</label>
             <input type="email" className="input" value={form.email} onChange={set('email')} required placeholder="jane@company.com" />
           </div>
           {role === 'RECRUITER' && (
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-dark-200 mb-1.5">Agency / Company name</label>
+            <div>
+              <label className="label">Agency / Company name</label>
               <input className="input" value={form.organizationName} onChange={set('organizationName')} placeholder="Acme Recruitment" />
             </div>
           )}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-dark-200 mb-1.5">Password</label>
+          <div>
+            <label className="label">Password</label>
             <input type="password" className="input" value={form.password} onChange={set('password')} required placeholder="Min. 8 characters" />
           </div>
-          <button type="submit" disabled={loading} className="btn-primary w-full justify-center">
+          <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3">
             {loading ? 'Creating account…' : 'Create account'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-dark-400">
-          Already have an account? <Link to="/login" className="hover:text-brand-300 transition-colors" style={{ color: '#C084FC' }}>Sign in →</Link>
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account? <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">Sign in →</Link>
         </p>
       </div>
     </div>

@@ -33,9 +33,9 @@ function CandidateCard({ app, onDragStart }: { app: AppCard; onDragStart: () => 
       <div className="flex items-start gap-2">
         <Avatar name={app.candidate.name} src={app.candidate.avatarUrl} size="sm" />
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium text-white truncate">{app.candidate.name}</div>
-          <div className="text-xs text-dark-400 truncate">{app.candidate.currentTitle}</div>
-          {app.candidate.currentCompany && <div className="text-xs text-dark-500 truncate">{app.candidate.currentCompany}</div>}
+          <div className="text-sm font-medium text-gray-900 truncate">{app.candidate.name}</div>
+          <div className="text-xs text-gray-400 truncate">{app.candidate.currentTitle}</div>
+          {app.candidate.currentCompany && <div className="text-xs text-gray-400 truncate">{app.candidate.currentCompany}</div>}
         </div>
         {app.aiScore && (
           <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${app.aiScore >= 80 ? 'bg-emerald-500/20 text-emerald-400' : app.aiScore >= 60 ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
@@ -98,14 +98,14 @@ export default function PipelinePage() {
             {/* Stage header */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 rounded-full" style={{ background: stage.color || '#6B7280' }} />
-              <span className="text-sm font-semibold text-dark-200">{stage.name}</span>
-              <span className="ml-auto text-xs text-dark-500 bg-dark-700 px-1.5 py-0.5 rounded-full">
+              <span className="text-sm font-semibold text-gray-600">{stage.name}</span>
+              <span className="ml-auto text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
                 {stage.applications.length}
               </span>
             </div>
 
             {/* Cards */}
-            <div className="flex-1 min-h-20 bg-dark-800/50 rounded-xl p-2 border border-dark-700 border-dashed">
+            <div className="flex-1 min-h-20 bg-white/50 rounded-xl p-2 border border-gray-200 border-dashed">
               {stage.applications.map(app => (
                 <CandidateCard key={app.id} app={app} onDragStart={() => setDragging(app.id)} />
               ))}
