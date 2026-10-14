@@ -21,7 +21,11 @@ export function createApp() {
 
   app.use(helmet());
   app.use(cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:4173'],
+    origin: process.env.CORS_ORIGIN?.split(',') || [
+      'http://localhost:5173',
+      'http://localhost:4173',
+      'https://sahilphatak.github.io',
+    ],
     credentials: true,
   }));
   app.use(express.json({ limit: '10mb' }));
