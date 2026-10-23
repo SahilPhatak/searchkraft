@@ -1,9 +1,11 @@
-name: Deploy to GitHub Pages
+# GitHub Pages deploy — disabled now that Vercel handles both frontend + backend.
+# Vercel auto-deploys on every push to main via the Vercel GitHub integration.
+# Keeping this file in case you want to re-enable GitHub Pages as a fallback.
+
+name: Deploy to GitHub Pages (disabled)
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:   # manual only — remove this and add push/main to re-enable
 
 permissions:
   contents: read
@@ -18,30 +20,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install dependencies
         working-directory: apps/web
         run: npm install
-
       - name: Build web app
         working-directory: apps/web
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_BASE_URL: /${{ github.event.repository.name }}/
         run: npm run build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
 

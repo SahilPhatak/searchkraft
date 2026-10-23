@@ -39,5 +39,6 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
+  // On Vercel: base is always '/' (same domain). GitHub Pages used VITE_BASE_URL=/searchkraft/
   base: process.env['VITE_BASE_URL'] ?? '/',
 });
