@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd apps/web && npm run build",
+  "buildCommand": "cd apps/web && npx vite build",
   "outputDirectory": "apps/web/dist",
-  "installCommand": "npm install && cd apps/web && npm install",
+  "installCommand": "npm install --include=dev",
   "framework": null,
   "functions": {
     "api/index.ts": {
