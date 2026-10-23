@@ -2,12 +2,11 @@
   "version": 2,
   "buildCommand": "cd apps/web && npm install && npm run build",
   "outputDirectory": "apps/web/dist",
-  "installCommand": "cd apps/api && npm install",
+  "installCommand": "npm install",
   "framework": null,
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node@3.x",
-      "includeFiles": "apps/api/src/**,apps/api/prisma/**,packages/**"
+      "includeFiles": "apps/api/src/**,apps/api/prisma/**"
     }
   },
   "rewrites": [

@@ -14,7 +14,7 @@
     "lint": "npm run lint --workspace=apps/web",
     "typecheck": "npm run typecheck --workspace=apps/web && npm run typecheck --workspace=apps/api",
     "vercel-build": "cd apps/web && npm install && npm run build",
-    "postinstall": "cd apps/api && npx prisma generate"
+    "postinstall": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
