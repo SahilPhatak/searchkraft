@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd apps/web && ../../node_modules/.bin/vite build",
+  "buildCommand": "cd apps/web && npm run build",
   "outputDirectory": "apps/web/dist",
-  "installCommand": "npm install",
+  "installCommand": "npm install && cd apps/web && npm install",
   "framework": null,
   "functions": {
     "api/index.ts": {
