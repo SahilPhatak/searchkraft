@@ -62,10 +62,10 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-col leading-none">
               <span className="font-bold text-white tracking-tight" style={{ fontSize: 20 }}>SearchKraft</span>
-              <span className="text-xs tracking-widest uppercase font-medium text-purple-200">Recruit OS</span>
+              <span className="text-xs tracking-widest uppercase font-medium text-purple-200">AI Recruiting</span>
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4 leading-tight">Your AI-native recruitment OS</h1>
+          <h1 className="text-4xl font-bold text-white mb-4 leading-tight">Your Talent. One Intelligent Search.</h1>
           <p className="text-lg text-purple-200">Find, match, and hire the best candidates 10x faster with intelligent automation.</p>
           <p className="mt-4 text-sm font-semibold tracking-widest uppercase text-purple-300">Crafting Right Connections</p>
           <div className="mt-10 grid grid-cols-3 gap-4">

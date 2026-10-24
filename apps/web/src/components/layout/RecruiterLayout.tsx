@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, Users, BarChart2, CheckSquare, Building2, Settings, LogOut, Bell } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Users, BarChart2, CheckSquare, Building2, Settings, LogOut, Bell, Search, Mail, Video } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
 import Avatar from '../ui/Avatar';
 
@@ -7,6 +7,9 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/jobs', icon: Briefcase, label: 'Jobs' },
   { to: '/talent', icon: Users, label: 'Talent' },
+  { to: '/sourcing', icon: Search, label: 'AI Sourcing' },
+  { to: '/outreach', icon: Mail, label: 'Outreach' },
+  { to: '/interviews', icon: Video, label: 'Interviews' },
   { to: '/analytics', icon: BarChart2, label: 'Analytics' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { to: '/clients', icon: Building2, label: 'Clients' },
@@ -47,7 +50,7 @@ export default function RecruiterLayout() {
             <span className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 16 }}>
               Search<span className="gradient-text">Kraft</span>
             </span>
-            <span className="text-gray-400 text-xs mt-0.5 tracking-widest uppercase font-medium">Recruit OS</span>
+            <span className="text-gray-400 text-xs mt-0.5 tracking-wide font-medium">AI Recruiting</span>
           </div>
         </div>
 

@@ -14,6 +14,9 @@ import notificationsRouter from './routes/notifications';
 import tasksRouter from './routes/tasks';
 import usersRouter from './routes/users';
 import searchRouter from './routes/search';
+import sourcingRouter from './routes/sourcing';
+import outreachRouter from './routes/outreach';
+import interviewsRouter from './routes/interviews';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 export function createApp() {
@@ -44,6 +47,9 @@ export function createApp() {
   app.use('/api/v1/tasks', tasksRouter);
   app.use('/api/v1/users', usersRouter);
   app.use('/api/v1/search', searchRouter);
+  app.use('/api/v1/sourcing', sourcingRouter);
+  app.use('/api/v1/outreach', outreachRouter);
+  app.use('/api/v1/interviews', interviewsRouter);
 
   app.use(notFound);
   app.use(errorHandler);

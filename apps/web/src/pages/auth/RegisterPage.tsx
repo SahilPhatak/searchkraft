@@ -61,7 +61,7 @@ export default function RegisterPage() {
             <span className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 20 }}>
               Search<span className="gradient-text">Kraft</span>
             </span>
-            <span className="text-gray-400 text-xs tracking-widest uppercase font-medium">Recruit OS</span>
+            <span className="text-gray-400 text-xs tracking-widest uppercase font-medium">AI Recruiting</span>
           </div>
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-1">Create account</h2>

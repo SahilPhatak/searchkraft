@@ -17,6 +17,9 @@ import AnalyticsPage from './pages/recruiter/AnalyticsPage';
 import TasksPage from './pages/recruiter/TasksPage';
 import ClientsPage from './pages/recruiter/ClientsPage';
 import SettingsPage from './pages/recruiter/SettingsPage';
+import SourcingPage from './pages/recruiter/SourcingPage';
+import OutreachPage from './pages/recruiter/OutreachPage';
+import InterviewsPage from './pages/recruiter/InterviewsPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import ClientDashboard from './pages/client/ClientDashboard';
 
@@ -46,6 +49,9 @@ function AppRoutes() {
         <Route path="/jobs/:id/pipeline" element={<PipelinePage />} />
         <Route path="/talent" element={<TalentPage />} />
         <Route path="/candidates/:id" element={<CandidateProfilePage />} />
+        <Route path="/sourcing" element={<SourcingPage />} />
+        <Route path="/outreach" element={<OutreachPage />} />
+        <Route path="/interviews" element={<InterviewsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/clients" element={<ClientsPage />} />

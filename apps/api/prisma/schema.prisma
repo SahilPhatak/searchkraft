@@ -88,6 +88,55 @@ enum TaskStatus {
   CANCELLED
 }
 
+enum AgentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum OutreachChannel {
+  EMAIL
+  WHATSAPP
+  PHONE
+  LINKEDIN
+}
+
+enum OutreachStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  OPENED
+  REPLIED
+  BOUNCED
+  FAILED
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum InterviewType {
+  SCREENING
+  TECHNICAL
+  BEHAVIORAL
+  LIVE_CODING
+  CASE_STUDY
+  CULTURE_FIT
+}
+
+// ─── Core Models ──────────────────────────────────────
+
 model Organization {
   id          String    @id @default(cuid())
   name        String
@@ -99,11 +148,14 @@ model Organization {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  users       User[]
-  jobs        Job[]
-  clients     Client[]
-  candidates  Candidate[]
-  tasks       Task[]
+  users             User[]
+  jobs              Job[]
+  clients           Client[]
+  candidates        Candidate[]
+  tasks             Task[]
+  sourcingAgents    SourcingAgent[]
+  outreachCampaigns OutreachCampaign[]
+  savedSearches     SavedSearch[]
 }
 
 model User {
@@ -121,13 +173,17 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  organization      Organization?       @relation(fields: [organizationId], references: [id])
-  candidateProfile  Candidate?          @relation("CandidateUser")
-  notifications     Notification[]
-  tasks             Task[]              @relation("TaskAssignee")
-  createdTasks      Task[]              @relation("TaskCreator")
-  candidateNotes    CandidateNote[]
+  organization       Organization?        @relation(fields: [organizationId], references: [id])
+  candidateProfile   Candidate?           @relation("CandidateUser")
+  notifications      Notification[]
+  tasks              Task[]               @relation("TaskAssignee")
+  createdTasks       Task[]               @relation("TaskCreator")
+  candidateNotes     CandidateNote[]
   applicationHistory ApplicationHistory[]
+  sourcingAgents     SourcingAgent[]
+  outreachCampaigns  OutreachCampaign[]
+  savedSearches      SavedSearch[]
+  interviewsConducted AIInterview[]       @relation("InterviewConductor")
 }
 
 model Client {
@@ -173,10 +229,13 @@ model Job {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  client         Client?         @relation(fields: [clientId], references: [id])
-  pipelineStages PipelineStage[]
-  applications   Application[]
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  client            Client?           @relation(fields: [clientId], references: [id])
+  pipelineStages    PipelineStage[]
+  applications      Application[]
+  sourcingAgents    SourcingAgent[]
+  outreachCampaigns OutreachCampaign[]
+  interviews        AIInterview[]
 
   @@unique([organizationId, slug])
 }
@@ -201,16 +260,25 @@ model Candidate {
   availabilityStatus AvailabilityStatus @default(OPEN)
   expectedSalary     Int?
   noticePeriodDays   Int?
+  source             String?
+  sourceDetails      String?
+  tags               String[]
+  aiMatchScore       Int?
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  user         User?         @relation("CandidateUser", fields: [userId], references: [id])
-  applications Application[]
-  notes        CandidateNote[]
+  organization      Organization?       @relation(fields: [organizationId], references: [id])
+  user              User?               @relation("CandidateUser", fields: [userId], references: [id])
+  applications      Application[]
+  notes             CandidateNote[]
+  outreachMessages  OutreachMessage[]
+  interviews        AIInterview[]
+  sourcingResults   SourcingResult[]
 
   @@unique([organizationId, email])
 }
+
+// ─── Pipeline Models ──────────────────────────────────
 
 model PipelineStage {
   id        String    @id @default(cuid())
@@ -260,6 +328,180 @@ model ApplicationHistory {
   toStage     PipelineStage @relation("ToStage", fields: [toStageId], references: [id])
   movedBy     User          @relation(fields: [movedById], references: [id])
 }
+
+// ─── AI Sourcing Models ──────────────────────────────
+
+model SourcingAgent {
+  id             String      @id @default(cuid())
+  organizationId String
+  jobId          String?
+  createdById    String
+  name           String
+  description    String?
+  searchQuery    String
+  filters        Json?
+  status         AgentStatus @default(ACTIVE)
+  totalFound     Int         @default(0)
+  totalReviewed  Int         @default(0)
+  lastRunAt      DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id])
+  job          Job?            @relation(fields: [jobId], references: [id])
+  createdBy    User            @relation(fields: [createdById], references: [id])
+  results      SourcingResult[]
+}
+
+model SourcingResult {
+  id              String   @id @default(cuid())
+  agentId         String
+  candidateId     String
+  matchScore      Int
+  matchReasoning  String?
+  signals         Json?
+  isReviewed      Boolean  @default(false)
+  isShortlisted   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  agent     SourcingAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  candidate Candidate     @relation(fields: [candidateId], references: [id])
+
+  @@unique([agentId, candidateId])
+}
+
+model SavedSearch {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  name           String
+  query          String
+  filters        Json?
+  resultCount    Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+}
+
+// ─── Outreach Models ─────────────────────────────────
+
+model OutreachCampaign {
+  id             String         @id @default(cuid())
+  organizationId String
+  jobId          String?
+  createdById    String
+  name           String
+  channel        OutreachChannel @default(EMAIL)
+  status         OutreachStatus  @default(DRAFT)
+  subject        String?
+  templateBody   String?
+  followUpDays   Int?
+  maxFollowUps   Int            @default(3)
+  totalSent      Int            @default(0)
+  totalOpened    Int            @default(0)
+  totalReplied   Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization     @relation(fields: [organizationId], references: [id])
+  job          Job?             @relation(fields: [jobId], references: [id])
+  createdBy    User             @relation(fields: [createdById], references: [id])
+  messages     OutreachMessage[]
+  steps        OutreachStep[]
+}
+
+model OutreachStep {
+  id         String          @id @default(cuid())
+  campaignId String
+  stepOrder  Int
+  channel    OutreachChannel @default(EMAIL)
+  subject    String?
+  body       String
+  delayDays  Int             @default(0)
+  createdAt  DateTime        @default(now())
+
+  campaign OutreachCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model OutreachMessage {
+  id          String        @id @default(cuid())
+  campaignId  String
+  candidateId String
+  channel     OutreachChannel
+  subject     String?
+  body        String
+  status      MessageStatus @default(PENDING)
+  sentAt      DateTime?
+  openedAt    DateTime?
+  repliedAt   DateTime?
+  replyBody   String?
+  stepNumber  Int           @default(1)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  campaign  OutreachCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  candidate Candidate        @relation(fields: [candidateId], references: [id])
+}
+
+// ─── AI Interview Models ─────────────────────────────
+
+model AIInterview {
+  id            String          @id @default(cuid())
+  jobId         String
+  candidateId   String
+  conductedById String?
+  type          InterviewType   @default(SCREENING)
+  status        InterviewStatus @default(SCHEDULED)
+  scheduledAt   DateTime?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  duration      Int?
+  overallScore  Int?
+  summary       String?
+  strengths     String[]
+  concerns      String[]
+  recommendation String?
+  recordingUrl  String?
+  transcriptUrl String?
+  cheatingFlags Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  conductedBy User?     @relation("InterviewConductor", fields: [conductedById], references: [id])
+  questions   InterviewQuestion[]
+  skillScores InterviewSkillScore[]
+}
+
+model InterviewQuestion {
+  id           String   @id @default(cuid())
+  interviewId  String
+  questionText String
+  answerText   String?
+  score        Int?
+  feedback     String?
+  order        Int
+  category     String?
+  createdAt    DateTime @default(now())
+
+  interview AIInterview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+}
+
+model InterviewSkillScore {
+  id          String @id @default(cuid())
+  interviewId String
+  skillName   String
+  score       Int
+  maxScore    Int    @default(10)
+  notes       String?
+
+  interview AIInterview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+}
+
+// ─── Support Models ──────────────────────────────────
 
 model CandidateNote {
   id          String   @id @default(cuid())
