@@ -1,11 +1,24 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { z } from 'zod';
 import { prisma } from '../database/prisma';
 import { env } from '../utils/env';
 import { sendSuccess, sendError, AppError } from '../utils/response';
 import { authenticate } from '../middleware/auth';
+
+// In-memory password reset tokens (token -> { email, expiresAt })
+// In production, use a DB table or Redis
+const resetTokens = new Map<string, { email: string; expiresAt: Date }>();
+
+// Cleanup expired tokens every 15 minutes
+setInterval(() => {
+  const now = new Date();
+  for (const [token, data] of resetTokens) {
+    if (data.expiresAt < now) resetTokens.delete(token);
+  }
+}, 15 * 60 * 1000);
 
 const router = Router();
 
@@ -98,6 +111,63 @@ router.get('/me', authenticate, async (req: Request, res: Response, next: NextFu
 
 router.post('/logout', authenticate, (_req: Request, res: Response) => {
   sendSuccess(res, null, 200, 'Logged out');
+});
+
+// --- Forgot / Reset Password ---
+
+const forgotSchema = z.object({ email: z.string().email() });
+const resetSchema = z.object({
+  token: z.string().min(1),
+  password: z.string().min(8),
+});
+
+router.post('/forgot-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = forgotSchema.parse(req.body);
+
+    // Always return success to prevent email enumeration
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (user && user.isActive) {
+      const token = crypto.randomBytes(32).toString('hex');
+      resetTokens.set(token, { email, expiresAt: new Date(Date.now() + 60 * 60 * 1000) }); // 1 hour
+
+      // In production, send an email with the reset link:
+      // https://yourdomain.com/reset-password?token=<token>
+      // For now, log it (only in dev)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[DEV] Password reset token for ${email}: ${token}`);
+      }
+    }
+
+    sendSuccess(res, null, 200, 'If that email is registered, a reset link has been sent.');
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/reset-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token, password } = resetSchema.parse(req.body);
+
+    const tokenData = resetTokens.get(token);
+    if (!tokenData || tokenData.expiresAt < new Date()) {
+      resetTokens.delete(token);
+      throw new AppError('Reset link is invalid or has expired.', 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: tokenData.email } });
+    if (!user) throw new AppError('Reset link is invalid or has expired.', 400);
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+
+    // Invalidate the used token
+    resetTokens.delete(token);
+
+    sendSuccess(res, null, 200, 'Password has been reset successfully.');
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

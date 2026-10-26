@@ -18,9 +18,13 @@ api.interceptors.response.use(
   r => r,
   err => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('sk_token');
-      localStorage.removeItem('sk_user');
-      window.location.href = '/login';
+      // Don't redirect if already on login/register (user just typed wrong password)
+      const path = window.location.pathname;
+      if (path !== '/login' && path !== '/register') {
+        localStorage.removeItem('sk_token');
+        localStorage.removeItem('sk_user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(err);
   }

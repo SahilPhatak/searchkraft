@@ -22,6 +22,8 @@ import OutreachPage from './pages/recruiter/OutreachPage';
 import InterviewsPage from './pages/recruiter/InterviewsPage';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import ClientDashboard from './pages/client/ClientDashboard';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 function ProtectedRoute({ children, roles }: { children: ReactNode; roles?: string[] }) {
   const { user, isLoading } = useAuth();
@@ -40,6 +42,8 @@ function AppRoutes() {
       <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LandingPage />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPasswordPage />} />
+      <Route path="/reset-password" element={user ? <Navigate to="/dashboard" /> : <ResetPasswordPage />} />
 
       {/* Recruiter workspace */}
       <Route element={<ProtectedRoute><RecruiterLayout /></ProtectedRoute>}>
