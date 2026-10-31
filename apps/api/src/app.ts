@@ -18,6 +18,7 @@ import sourcingRouter from './routes/sourcing';
 import outreachRouter from './routes/outreach';
 import interviewsRouter from './routes/interviews';
 import adminRouter from './routes/admin';
+import candidatePortalRouter from './routes/candidate-portal';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 export function createApp() {
@@ -51,6 +52,7 @@ export function createApp() {
   app.use('/api/v1/sourcing', sourcingRouter);
   app.use('/api/v1/outreach', outreachRouter);
   app.use('/api/v1/interviews', interviewsRouter);
+  app.use('/api/v1/candidate-portal', candidatePortalRouter);
   app.use('/api/v1/admin', adminRouter);
 
   app.use(notFound);
