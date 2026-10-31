@@ -33,21 +33,39 @@ function ProtectedRoute({ children, roles }: { children: ReactNode; roles?: stri
   return <>{children}</>;
 }
 
+function getDashboardPath(role?: string): string {
+  if (role === 'CANDIDATE') return '/candidate';
+  if (role === 'CLIENT_ADMIN' || role === 'CLIENT_USER') return '/client';
+  return '/dashboard';
+}
+
+function SmartRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={getDashboardPath(user?.role)} replace />;
+}
+
+function RecruiterGuard({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  if (user?.role === 'CANDIDATE') return <Navigate to="/candidate" replace />;
+  if (user?.role === 'CLIENT_ADMIN' || user?.role === 'CLIENT_USER') return <Navigate to="/client" replace />;
+  return <>{children}</>;
+}
+
 function AppRoutes() {
   const { user } = useAuth();
 
   return (
     <Routes>
       {/* Public */}
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LandingPage />} />
-      <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
-      <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
-      <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPasswordPage />} />
-      <Route path="/reset-password" element={user ? <Navigate to="/dashboard" /> : <ResetPasswordPage />} />
+      <Route path="/" element={user ? <SmartRedirect /> : <LandingPage />} />
+      <Route path="/login" element={user ? <SmartRedirect /> : <LoginPage />} />
+      <Route path="/register" element={user ? <SmartRedirect /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={user ? <SmartRedirect /> : <ForgotPasswordPage />} />
+      <Route path="/reset-password" element={user ? <SmartRedirect /> : <ResetPasswordPage />} />
 
       {/* Recruiter workspace */}
       <Route element={<ProtectedRoute><RecruiterLayout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<RecruiterGuard><DashboardPage /></RecruiterGuard>} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
         <Route path="/jobs/:id/pipeline" element={<PipelinePage />} />

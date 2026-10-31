@@ -42,10 +42,11 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     if (existing) throw new AppError('Email already registered', 409);
 
     let organizationId: string | null = null;
-    if (body.role !== 'CANDIDATE' && body.organizationName) {
-      const slug = body.organizationName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString(36);
+    if (body.role !== 'CANDIDATE') {
+      const orgName = body.organizationName || `${body.name}'s Organization`;
+      const slug = orgName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString(36);
       const org = await prisma.organization.create({
-        data: { name: body.organizationName, slug, plan: 'FREE' },
+        data: { name: orgName, slug, plan: 'FREE' },
       });
       organizationId = org.id;
     }
