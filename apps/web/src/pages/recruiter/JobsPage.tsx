@@ -42,7 +42,12 @@ function CreateJobForm({ onSuccess }: { onSuccess: () => void }) {
   const mutation = useMutation({
     mutationFn: () => api.post('/jobs', { ...form, skills: form.skills.split(',').map(s => s.trim()).filter(Boolean) }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['jobs'] }); toast.success('Job created'); onSuccess(); },
-    onError: () => toast.error('Failed to create job'),
+    onError: (err: unknown) => {
+      const e = err as { response?: { data?: { error?: string; details?: { field: string; message: string }[] } } };
+      const details = e?.response?.data?.details;
+      const msg = details?.length ? details.map(d => `${d.field}: ${d.message}`).join(', ') : e?.response?.data?.error || 'Failed to create job';
+      toast.error(msg);
+    },
   });
 
   return (

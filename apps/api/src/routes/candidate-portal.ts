@@ -144,22 +144,15 @@ router.post('/jobs/:id/apply', async (req: Request, res: Response, next: NextFun
     });
     if (!candidate) {
       // Auto-create a candidate profile from user data
+      const user = await prisma.user.findUnique({ where: { id: req.user.sub }, select: { name: true, email: true } });
       candidate = await prisma.candidate.create({
         data: {
           userId: req.user.sub,
-          name: '', // will be updated below
-          email: req.user.email,
+          name: user?.name || '',
+          email: user?.email || req.user.email,
           availabilityStatus: 'ACTIVELY_LOOKING',
         },
       });
-      // Fetch user name to update candidate
-      const user = await prisma.user.findUnique({ where: { id: req.user.sub }, select: { name: true } });
-      if (user) {
-        candidate = await prisma.candidate.update({
-          where: { id: candidate.id },
-          data: { name: user.name },
-        });
-      }
     }
 
     // Check if already applied
@@ -273,15 +266,23 @@ router.put('/profile', async (req: Request, res: Response, next: NextFunction) =
       });
     }
 
-    // Upsert candidate profile
+    // Separate candidate-specific fields from the body
+    const { name, phone, ...candidateFields } = body;
+    const candidateData = {
+      ...candidateFields,
+      ...(name !== undefined && { name }),
+      ...(phone !== undefined && { phone }),
+    };
+
+    // Upsert candidate profile using userId (which has @unique)
     let candidate = await prisma.candidate.findUnique({
       where: { userId: req.user.sub },
     });
 
     if (candidate) {
       candidate = await prisma.candidate.update({
-        where: { id: candidate.id },
-        data: body,
+        where: { userId: req.user.sub },
+        data: candidateData,
       });
     } else {
       const user = await prisma.user.findUnique({
@@ -291,9 +292,10 @@ router.put('/profile', async (req: Request, res: Response, next: NextFunction) =
       candidate = await prisma.candidate.create({
         data: {
           userId: req.user.sub,
-          name: body.name || user?.name || '',
+          name: name || user?.name || '',
           email: user?.email || req.user.email,
-          ...body,
+          ...candidateFields,
+          ...(phone !== undefined && { phone }),
         },
       });
     }

@@ -21,14 +21,50 @@ router.get('/dashboard', async (req: Request, res: Response, next: NextFunction)
         include: {
           candidate: { select: { name: true, currentTitle: true } },
           job: { select: { title: true } },
-          stage: { select: { name: true } },
+          stage: { select: { name: true, stageType: true } },
         },
       }),
     ]);
 
+    // Get pipeline breakdown across all active jobs
+    const pipelineStages = await prisma.pipelineStage.groupBy({
+      by: ['stageType'],
+      where: { job: { organizationId: orgId, status: 'ACTIVE' } },
+      _count: true,
+    });
+
+    // Get actual candidate counts per stage
+    const stageCounts = await prisma.pipelineStage.findMany({
+      where: { job: { organizationId: orgId } },
+      select: {
+        stageType: true,
+        color: true,
+        name: true,
+        _count: { select: { applications: { where: { status: 'ACTIVE' } } } },
+      },
+    });
+
+    // Aggregate by stageType
+    const pipelineMap: Record<string, { count: number; color: string; name: string }> = {};
+    for (const s of stageCounts) {
+      if (!pipelineMap[s.stageType]) {
+        pipelineMap[s.stageType] = { count: 0, color: s.color || '#7C3AED', name: s.name };
+      }
+      pipelineMap[s.stageType].count += s._count.applications;
+    }
+
+    const pipeline = ['SOURCED', 'APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
+      .map(st => ({
+        stage: pipelineMap[st]?.name || st.charAt(0) + st.slice(1).toLowerCase(),
+        stageType: st,
+        count: pipelineMap[st]?.count || 0,
+        color: pipelineMap[st]?.color || '#7C3AED',
+      }));
+
     sendSuccess(res, {
       stats: { totalJobs, activeJobs, totalCandidates, totalApplications },
       recentApplications,
+      pipeline,
     });
   } catch (err) { next(err); }
 });

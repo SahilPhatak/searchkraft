@@ -9,7 +9,7 @@ router.use(authenticate, requireOrganization);
 
 const createJobSchema = z.object({
   title: z.string().min(2),
-  description: z.string().min(10),
+  description: z.string().min(3),
   requirements: z.string().optional(),
   responsibilities: z.string().optional(),
   workMode: z.enum(['REMOTE', 'ONSITE', 'HYBRID']).default('HYBRID'),
@@ -48,7 +48,7 @@ router.post('/', requireRoles(...RECRUITER_ROLES), async (req: Request, res: Res
     const slug = body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString(36);
 
     const job = await prisma.job.create({
-      data: { ...body, slug, organizationId: orgId, status: 'DRAFT', applicationCount: 0 },
+      data: { ...body, slug, organizationId: orgId, status: 'ACTIVE', applicationCount: 0 },
     });
 
     // Create default pipeline stages

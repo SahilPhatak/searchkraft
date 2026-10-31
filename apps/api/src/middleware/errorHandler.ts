@@ -15,7 +15,8 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
 
   if (err instanceof PrismaClientKnownRequestError) {
     if (err.code === 'P2002') {
-      return res.status(409).json({ success: false, error: 'Record already exists' });
+      const target = (err.meta?.target as string[])?.join(', ') || 'record';
+      return res.status(409).json({ success: false, error: `A record with this ${target} already exists` });
     }
     if (err.code === 'P2025') {
       return res.status(404).json({ success: false, error: 'Record not found' });

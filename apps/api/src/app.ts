@@ -26,11 +26,20 @@ export function createApp() {
 
   app.use(helmet());
   app.use(cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || [
-      'http://localhost:5173',
-      'http://localhost:4173',
-      'https://sahilphatak.github.io',
-    ],
+    origin: (origin, callback) => {
+      const allowed = process.env.CORS_ORIGIN?.split(',') || [
+        'http://localhost:5173',
+        'http://localhost:4173',
+        'https://sahilphatak.github.io',
+        'https://searchkraft.vercel.app',
+      ];
+      // Allow same-origin (no origin header), explicit list, or any Vercel preview URL
+      if (!origin || allowed.includes(origin) || /\.vercel\.app$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     credentials: true,
   }));
   app.use(express.json({ limit: '10mb' }));

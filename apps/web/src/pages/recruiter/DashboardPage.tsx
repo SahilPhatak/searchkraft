@@ -76,21 +76,21 @@ export default function DashboardPage() {
               <Link to="/jobs" className="text-sm text-brand-600 hover:text-brand-700 flex items-center gap-1 font-medium">All jobs <ArrowRight size={14} /></Link>
             </div>
             <div className="space-y-3">
-              {[
-                { stage: 'Sourced', count: 142, max: 142, color: '#C084FC' },
-                { stage: 'Screening', count: 68, max: 142, color: '#A855F7' },
-                { stage: 'Interview', count: 34, max: 142, color: '#7C3AED' },
-                { stage: 'Offer', count: 12, max: 142, color: '#6D28D9' },
-                { stage: 'Hired', count: 5, max: 142, color: '#10B981' },
-              ].map(s => (
-                <div key={s.stage} className="flex items-center gap-4">
-                  <span className="text-sm text-gray-600 w-20">{s.stage}</span>
-                  <div className="flex-1">
-                    <MiniBar value={s.count} max={s.max} color={s.color} />
+              {(data?.pipeline || []).map((s: { stage: string; count: number; color: string }) => {
+                const maxCount = Math.max(...(data?.pipeline || []).map((p: { count: number }) => p.count), 1);
+                return (
+                  <div key={s.stage} className="flex items-center gap-4">
+                    <span className="text-sm text-gray-600 w-20">{s.stage}</span>
+                    <div className="flex-1">
+                      <MiniBar value={s.count} max={maxCount} color={s.color} />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-900 w-10 text-right">{s.count}</span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-900 w-10 text-right">{s.count}</span>
-                </div>
-              ))}
+                );
+              })}
+              {(!data?.pipeline || data.pipeline.length === 0) && (
+                <p className="text-gray-400 text-sm py-4 text-center">No pipeline data yet. Create a job to get started.</p>
+              )}
             </div>
           </div>
 
@@ -174,17 +174,21 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <h2 className="font-semibold text-gray-900 mb-4">This Month</h2>
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: 'Sourced', value: '142', color: 'text-purple-600' },
-                { label: 'Interviews', value: '34', color: 'text-blue-600' },
-                { label: 'Offers', value: '12', color: 'text-green-600' },
-                { label: 'Hires', value: '5', color: 'text-brand-600' },
-              ].map(m => (
-                <div key={m.label} className="bg-gray-50 rounded-lg p-3 text-center">
-                  <div className={`text-xl font-bold ${m.color}`}>{m.value}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{m.label}</div>
-                </div>
-              ))}
+              {(() => {
+                const p = data?.pipeline || [];
+                const getCount = (st: string) => p.find((s: { stageType: string }) => s.stageType === st)?.count || 0;
+                return [
+                  { label: 'Sourced', value: getCount('SOURCED'), color: 'text-purple-600' },
+                  { label: 'Interviews', value: getCount('INTERVIEW'), color: 'text-blue-600' },
+                  { label: 'Offers', value: getCount('OFFER'), color: 'text-green-600' },
+                  { label: 'Hires', value: getCount('HIRED'), color: 'text-brand-600' },
+                ].map(m => (
+                  <div key={m.label} className="bg-gray-50 rounded-lg p-3 text-center">
+                    <div className={`text-xl font-bold ${m.color}`}>{m.value}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{m.label}</div>
+                  </div>
+                ));
+              })()}
             </div>
           </div>
         </div>
