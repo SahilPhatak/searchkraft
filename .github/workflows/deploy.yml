@@ -1,50 +1,213 @@
-# GitHub Pages deploy — disabled now that Vercel handles both frontend + backend.
-# Vercel auto-deploys on every push to main via the Vercel GitHub integration.
-# Keeping this file in case you want to re-enable GitHub Pages as a fallback.
-
-name: Deploy to GitHub Pages (disabled)
+name: Build & Deploy to EKS
 
 on:
-  workflow_dispatch:   # manual only — remove this and add push/main to re-enable
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com
+  EKS_CLUSTER: searchkraft-production
 
 permissions:
   contents: read
-  pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
-  build:
+  # ── Detect which services changed ──────────────────
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      auth: ${{ steps.changes.outputs.auth }}
+      jobs: ${{ steps.changes.outputs.jobs }}
+      candidate: ${{ steps.changes.outputs.candidate }}
+      notification: ${{ steps.changes.outputs.notification }}
+      ai: ${{ steps.changes.outputs.ai }}
+      analytics: ${{ steps.changes.outputs.analytics }}
+      gateway: ${{ steps.changes.outputs.gateway }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+      shared: ${{ steps.changes.outputs.shared }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            shared:
+              - 'services/shared/**'
+            auth:
+              - 'services/auth-service/**'
+            jobs:
+              - 'services/jobs-service/**'
+            candidate:
+              - 'services/candidate-service/**'
+            notification:
+              - 'services/notification-service/**'
+            ai:
+              - 'services/ai-service/**'
+            analytics:
+              - 'services/analytics-service/**'
+            gateway:
+              - 'services/api-gateway/**'
+            frontend:
+              - 'apps/web/**'
+
+  # ── Lint & test ────────────────────────────────────
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - name: Install dependencies
-        working-directory: apps/web
-        run: npm install
-      - name: Build web app
-        working-directory: apps/web
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_BASE_URL: /${{ github.event.repository.name }}/
-        run: npm run build
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/web/dist
+          node-version: 20
+          cache: 'npm'
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      - name: Install dependencies
+        run: npm ci --workspace=services/shared 2>/dev/null || true
+
+      - name: Typecheck services
+        run: |
+          for svc in auth-service jobs-service candidate-service notification-service ai-service analytics-service api-gateway; do
+            if [ -f "services/$svc/tsconfig.json" ]; then
+              echo "::group::Typechecking $svc"
+              cd "services/$svc" && npx tsc --noEmit 2>/dev/null || true && cd ../..
+              echo "::endgroup::"
+            fi
+          done
+
+  # ── Build, push, deploy each changed service ──────
+  build-and-deploy:
+    needs: [detect-changes, test]
     runs-on: ubuntu-latest
-    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: auth-service
+            changed: ${{ needs.detect-changes.outputs.auth == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/auth-service/Dockerfile
+          - service: jobs-service
+            changed: ${{ needs.detect-changes.outputs.jobs == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/jobs-service/Dockerfile
+          - service: candidate-service
+            changed: ${{ needs.detect-changes.outputs.candidate == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/candidate-service/Dockerfile
+          - service: notification-service
+            changed: ${{ needs.detect-changes.outputs.notification == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/notification-service/Dockerfile
+          - service: ai-service
+            changed: ${{ needs.detect-changes.outputs.ai == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/ai-service/Dockerfile
+          - service: analytics-service
+            changed: ${{ needs.detect-changes.outputs.analytics == 'true' || needs.detect-changes.outputs.shared == 'true' }}
+            dockerfile: services/analytics-service/Dockerfile
+          - service: api-gateway
+            changed: ${{ needs.detect-changes.outputs.gateway == 'true' }}
+            dockerfile: services/api-gateway/Dockerfile
+          - service: frontend
+            changed: ${{ needs.detect-changes.outputs.frontend == 'true' }}
+            dockerfile: infrastructure/docker/Dockerfile.frontend
+
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+
+      - name: Skip unchanged
+        if: matrix.changed != 'true'
+        run: echo "No changes in ${{ matrix.service }}, skipping."
+
+      - name: Configure AWS credentials
+        if: matrix.changed == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: matrix.changed == 'true'
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        if: matrix.changed == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        if: matrix.changed == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/searchkraft/${{ matrix.service }}:${{ github.sha }}
+            ${{ env.ECR_REGISTRY }}/searchkraft/${{ matrix.service }}:latest
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+      - name: Update kubeconfig
+        if: matrix.changed == 'true'
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ env.EKS_CLUSTER }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Deploy to EKS
+        if: matrix.changed == 'true'
+        run: |
+          kubectl set image deployment/${{ matrix.service }} \
+            ${{ matrix.service }}=${{ env.ECR_REGISTRY }}/searchkraft/${{ matrix.service }}:${{ github.sha }} \
+            -n searchkraft
+
+          echo "Waiting for rollout..."
+          kubectl rollout status deployment/${{ matrix.service }} \
+            -n searchkraft --timeout=300s
+
+      - name: Rollback on failure
+        if: matrix.changed == 'true' && failure()
+        run: |
+          echo "Deployment failed — rolling back ${{ matrix.service }}"
+          kubectl rollout undo deployment/${{ matrix.service }} -n searchkraft
+          kubectl rollout status deployment/${{ matrix.service }} -n searchkraft --timeout=120s
+
+  # ── Run database migrations (only when shared changes) ─
+  migrate:
+    needs: [detect-changes, build-and-deploy]
+    runs-on: ubuntu-latest
+    if: needs.detect-changes.outputs.shared == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ env.EKS_CLUSTER }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Run Prisma migrations
+        run: |
+          kubectl run prisma-migrate-${{ github.run_id }} \
+            --image=${{ env.ECR_REGISTRY }}/searchkraft/auth-service:${{ github.sha }} \
+            --restart=Never \
+            --namespace=searchkraft \
+            --env="DATABASE_URL=${{ secrets.DATABASE_URL }}" \
+            --command -- npx prisma migrate deploy
+
+          kubectl wait --for=condition=Ready \
+            pod/prisma-migrate-${{ github.run_id }} \
+            -n searchkraft --timeout=120s || true
+
+          kubectl logs prisma-migrate-${{ github.run_id }} -n searchkraft
+          kubectl delete pod prisma-migrate-${{ github.run_id }} -n searchkraft --ignore-not-found

@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: searchkraft
+
+bases:
+  - ../../base
+
+commonLabels:
+  environment: production
+
+patchesStrategicMerge:
+  - resource-patches.yaml
+
+# Override images with production ECR registry
+images:
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/api-gateway
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/api-gateway
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/auth-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/auth-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/jobs-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/jobs-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/candidate-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/candidate-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/notification-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/notification-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/ai-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/ai-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/analytics-service
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/analytics-service
+    newTag: production
+  - name: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/frontend
+    newName: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/searchkraft/frontend
+    newTag: production

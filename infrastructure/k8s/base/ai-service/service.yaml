@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-service
+  namespace: searchkraft
+  labels:
+    app: ai-service
+    app.kubernetes.io/part-of: searchkraft
+spec:
+  type: ClusterIP
+  selector:
+    app: ai-service
+  ports:
+    - port: 3005
+      targetPort: 3005
+      protocol: TCP
+      name: http

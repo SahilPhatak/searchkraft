@@ -1,0 +1,58 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: searchkraft
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/part-of: searchkraft
+
+resources:
+  # Cluster-wide
+  - namespace.yaml
+  - secrets.yaml
+  - configmap.yaml
+  - service-account.yaml
+  - ingress.yaml
+  - pdb.yaml
+
+  # API Gateway
+  - api-gateway/deployment.yaml
+  - api-gateway/service.yaml
+  - api-gateway/hpa.yaml
+
+  # Auth Service
+  - auth-service/deployment.yaml
+  - auth-service/service.yaml
+  - auth-service/hpa.yaml
+
+  # Jobs Service
+  - jobs-service/deployment.yaml
+  - jobs-service/service.yaml
+  - jobs-service/hpa.yaml
+
+  # Candidate Service
+  - candidate-service/deployment.yaml
+  - candidate-service/service.yaml
+  - candidate-service/hpa.yaml
+
+  # Notification Service
+  - notification-service/deployment.yaml
+  - notification-service/service.yaml
+  - notification-service/hpa.yaml
+
+  # AI Service
+  - ai-service/deployment.yaml
+  - ai-service/service.yaml
+  - ai-service/hpa.yaml
+
+  # Analytics Service
+  - analytics-service/deployment.yaml
+  - analytics-service/service.yaml
+  - analytics-service/hpa.yaml
+
+  # Frontend
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+  - frontend/hpa.yaml
+  - frontend/configmap.yaml

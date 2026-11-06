@@ -1,0 +1,29 @@
+# SearchKraft Production Environment
+# Copy this file to terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to version control.
+
+aws_region   = "ap-south-1"
+environment  = "production"
+project_name = "searchkraft"
+
+# ─── EKS ─────────────────────────────────────────────
+cluster_version     = "1.29"
+node_instance_types = ["t3.xlarge"]
+node_desired_size   = 3
+node_min_size       = 3
+node_max_size       = 15
+
+# ─── RDS ─────────────────────────────────────────────
+db_instance_class  = "db.r6g.xlarge"
+db_master_username = "CHANGE_ME_searchkraft_admin"
+db_name            = "searchkraft"
+
+# ─── ElastiCache ─────────────────────────────────────
+redis_node_type = "cache.r6g.large"
+
+# ─── Domain (optional, set when ready) ───────────────
+# domain_names        = ["app.yuktiva.com"]
+# acm_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# ─── WAF ─────────────────────────────────────────────
+create_waf = true

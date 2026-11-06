@@ -2,9 +2,27 @@ node_modules/
 dist/
 .env
 .env.local
+.env.production
 *.log
 .DS_Store
 coverage/
 .nyc_output/
 prisma/dev.db
 *.sqlite
+
+# Terraform
+infrastructure/terraform/**/*.tfstate
+infrastructure/terraform/**/*.tfstate.*
+infrastructure/terraform/**/.terraform/
+infrastructure/terraform/**/terraform.tfvars
+infrastructure/terraform/**/*.tfplan
+infrastructure/terraform/**/tfplan
+*.tfvars
+!*.tfvars.example
+
+# Docker
+*.tar
+
+# Kubernetes secrets (never commit real secrets)
+infrastructure/k8s/**/secret*.yaml
+!infrastructure/k8s/base/secrets.yaml

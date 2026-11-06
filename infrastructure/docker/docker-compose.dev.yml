@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  # ── Infrastructure ───────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: searchkraft
+      POSTGRES_PASSWORD: localdev123
+      POSTGRES_DB: searchkraft
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U searchkraft"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API Gateway ──────────────────────────────────────
+  api-gateway:
+    build:
+      context: ../../
+      dockerfile: services/api-gateway/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - JOBS_SERVICE_URL=http://jobs-service:3002
+      - CANDIDATE_SERVICE_URL=http://candidate-service:3003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3004
+      - AI_SERVICE_URL=http://ai-service:3005
+      - ANALYTICS_SERVICE_URL=http://analytics-service:3006
+      - CORS_ORIGIN=http://localhost:5173,http://localhost:4173
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      jobs-service:
+        condition: service_healthy
+      candidate-service:
+        condition: service_healthy
+
+  # ── Auth Service ─────────────────────────────────────
+  auth-service:
+    build:
+      context: ../../
+      dockerfile: services/auth-service/Dockerfile
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Jobs Service ─────────────────────────────────────
+  jobs-service:
+    build:
+      context: ../../
+      dockerfile: services/jobs-service/Dockerfile
+    environment:
+      - PORT=3002
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Candidate Service ───────────────────────────────
+  candidate-service:
+    build:
+      context: ../../
+      dockerfile: services/candidate-service/Dockerfile
+    environment:
+      - PORT=3003
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Notification Service ────────────────────────────
+  notification-service:
+    build:
+      context: ../../
+      dockerfile: services/notification-service/Dockerfile
+    environment:
+      - PORT=3004
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3004/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── AI Service ──────────────────────────────────────
+  ai-service:
+    build:
+      context: ../../
+      dockerfile: services/ai-service/Dockerfile
+    environment:
+      - PORT=3005
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-placeholder-set-real-key}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3005/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Analytics Service ───────────────────────────────
+  analytics-service:
+    build:
+      context: ../../
+      dockerfile: services/analytics-service/Dockerfile
+    environment:
+      - PORT=3006
+      - DATABASE_URL=postgresql://searchkraft:localdev123@postgres:5432/searchkraft
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3006/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:
